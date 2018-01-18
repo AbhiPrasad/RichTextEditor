@@ -7,9 +7,17 @@ class RichTextEditor extends React.PureComponent {
     return (
       <div className="Richtexteditor">
         <Toolbar />
-        <Editor />
+        <Editor 
+          onChange={this.handleInputChange}
+        />
       </div>  
     );
+  }
+
+  private handleInputChange = (event: React.FormEvent<HTMLElement>) => {
+    this.setState({
+      html: event.currentTarget.innerHTML ? event.currentTarget.innerHTML : '',
+    });
   }
 }
 
