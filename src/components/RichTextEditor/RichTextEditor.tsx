@@ -56,12 +56,14 @@ class RichTextEditor extends React.PureComponent<Props, State> {
   }
 
   private handleMouseChange = (event: React.FormEvent<HTMLElement>) => {
-    this.setState({
-      anchorOffset: window.getSelection().anchorOffset,
-      focusOffset: window.getSelection().focusOffset,
-      anchorNode: window.getSelection().anchorNode,
-      focusNode: window.getSelection().focusNode,
-    });
+    if (window.getSelection().anchorOffset !== window.getSelection().focusOffset) {
+      this.setState({
+        anchorOffset: window.getSelection().anchorOffset,
+        focusOffset: window.getSelection().focusOffset,
+        anchorNode: window.getSelection().anchorNode,
+        focusNode: window.getSelection().focusNode,
+      });
+    }
   }
 
   private handleSetEditor = (element: HTMLDivElement) => {
@@ -78,13 +80,19 @@ class RichTextEditor extends React.PureComponent<Props, State> {
 
   private handleInsert = () => {
     const {anchorNode, focusNode, anchorOffset, focusOffset} = this.state;
-
-    // Anchor is where user begins selection and focus is where user ends selection
-
+    
     this.Editor!.focus();
     var range = document.createRange();
-    range.setStart(anchorNode!, anchorOffset);
-    range.setEnd(focusNode!, focusOffset);
+
+    // Anchor is where user begins selection and focus is where user ends selection
+    if (anchorOffset > focusOffset) {
+      range.setStart(focusNode!, focusOffset);
+      range.setEnd(anchorNode!, anchorOffset);
+    } else {
+      range.setStart(anchorNode!, anchorOffset);
+      range.setEnd(focusNode!, focusOffset);
+    }
+    
     var sel = window.getSelection();
     sel.removeAllRanges();
     sel.addRange(range);
