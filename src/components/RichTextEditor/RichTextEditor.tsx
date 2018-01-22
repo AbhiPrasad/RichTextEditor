@@ -1,11 +1,10 @@
 import * as React from 'react';
-import * as ReactModal from 'react-modal';
-import { Editor, Toolbar } from './components';
+import { Editor, Toolbar, LinkModal } from './components';
 import './RichTextEditor.css';
+import 'antd/dist/antd.css';
 
 interface State {
-  html: string | null;
-  showModal: boolean;
+  modalVisible: boolean;
   url: string;
   anchorOffset: number;
   focusOffset: number;
@@ -17,8 +16,7 @@ export interface Props {}
 
 class RichTextEditor extends React.PureComponent<Props, State> {
   state: State = {
-    html: null,
-    showModal: false,
+    modalVisible: false,
     url: '',
     anchorOffset: 0,
     focusOffset: 0,
@@ -29,29 +27,28 @@ class RichTextEditor extends React.PureComponent<Props, State> {
   private Editor: HTMLDivElement | null = null;
 
   render() {
-    const {showModal, url} = this.state;
+    const {modalVisible, url, anchorOffset, focusOffset} = this.state;
     return (
       <div className="Richtexteditor">
         <Toolbar 
           onBoldClick={this.handleBoldClick}
           onItalicClick={this.handleItalicClick}
           onLinkClick={this.handleLinkClick}
+          linkDisabled={anchorOffset === focusOffset}
         />
         <Editor 
           setEditor={this.handleSetEditor}
           onMouseChange={this.handleMouseChange}
         />
-        <ReactModal 
-          isOpen={showModal}
-          ariaHideApp={false}
-        >
-          <p>Insert url:</p>
-          <input type="text" onChange={this.handleUrlChange} value={url}/>
-
-          <button onClick={this.handleInsert} type="button"> Insert Link </button>
-          <button onClick={this.handleRemove} type="button"> Remove Link </button>
-        </ReactModal>
-      </div>  
+        <LinkModal 
+          visible={modalVisible}
+          url={url}
+          onUrlChange={this.handleUrlChange}
+          onClose={this.handleCloseModal}
+          onRemoveLink={this.handleRemoveLink}
+          onInsertLink={this.handleInsertLink}
+        />
+      </div>
     );
   }
 
@@ -70,15 +67,15 @@ class RichTextEditor extends React.PureComponent<Props, State> {
     this.Editor = element;
   }
 
-  private handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({url: event.currentTarget.value});
-  }
-
   private handleLinkClick = () => {
-    this.setState({showModal: true});
+    this.setState({modalVisible: true});
   }
 
-  private handleInsert = () => {
+  private handleCloseModal = () => {
+    this.setState({modalVisible: false});
+  }
+
+  private handleInsertLink = () => {
     const {anchorNode, focusNode, anchorOffset, focusOffset} = this.state;
     
     this.Editor!.focus();
@@ -98,12 +95,16 @@ class RichTextEditor extends React.PureComponent<Props, State> {
     sel.addRange(range);
 
     document.execCommand('createLink', false, this.state.url);
-    this.setState({showModal: false, url: ''});
+    this.setState({modalVisible: false, url: ''});
   }
 
-  private handleRemove = () => {
+  private handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({url: event.currentTarget.value});
+  }
+
+  private handleRemoveLink = () => {
     document.execCommand('unlink');
-    this.setState({showModal: false, url: ''});
+    this.handleCloseModal();
   }
 
   private handleItalicClick = () => {

@@ -1,33 +1,35 @@
 import * as React from 'react';
+import Button from 'antd/lib/button';
 import './Toolbar.css';
 
 export interface Props {
+  linkDisabled: boolean;
   onBoldClick(): void;
   onItalicClick(): void;
   onLinkClick?(): void;
 }
 
-export default function Toolbar({onBoldClick, onItalicClick, onLinkClick}: Props) {
+export default function Toolbar({linkDisabled, onBoldClick, onItalicClick, onLinkClick}: Props) {
   return (
     <div className="Toolbar">
-      <button 
-        type="button"
-        onClick={onBoldClick}
-      > 
-        B
-      </button>
-      <button 
-        type="button"
-        onClick={onItalicClick}
-      > 
-        I
-      </button>
-      <button 
-        type="button"
-        onClick={onLinkClick}
-      > 
-        Link
-      </button>
+      <Button.Group>
+        <Button 
+          onClick={onBoldClick}
+        > 
+          B
+        </Button>
+        <Button 
+          onClick={onItalicClick}
+        > 
+          I
+        </Button>
+        <Button 
+          onClick={onLinkClick}
+          disabled={linkDisabled}
+        > 
+          Link
+        </Button>
+      </Button.Group>
     </div>
   );
 }
