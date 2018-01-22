@@ -1,11 +1,9 @@
 import * as React from 'react';
-import { Editor, Toolbar } from './components';
-import { Modal, Button, Input } from 'antd';
+import { Editor, Toolbar, LinkModal } from './components';
 import './RichTextEditor.css';
 import 'antd/dist/antd.css';
 
 interface State {
-  html: string | null;
   modalVisible: boolean;
   url: string;
   anchorOffset: number;
@@ -18,7 +16,6 @@ export interface Props {}
 
 class RichTextEditor extends React.PureComponent<Props, State> {
   state: State = {
-    html: null,
     modalVisible: false,
     url: '',
     anchorOffset: 0,
@@ -43,31 +40,15 @@ class RichTextEditor extends React.PureComponent<Props, State> {
           setEditor={this.handleSetEditor}
           onMouseChange={this.handleMouseChange}
         />
-        <Modal 
+        <LinkModal 
           visible={modalVisible}
-          onCancel={this.handleCloseModal}
-          closable={true}
-          footer={[
-            <Button key="Remove" type="danger" onClick={this.handleRemove}>Remove Link</Button>,
-            <Button key="Cancel" onClick={this.handleCloseModal}>Cancel</Button>,
-            <Button 
-              key="Insert" 
-              type="primary" 
-              onClick={this.handleInsert}
-            >
-              Insert Link
-            </Button>,
-          ]}
-        >
-          <Input 
-            type="text" 
-            onChange={this.handleUrlChange} 
-            value={url} 
-            placeholder="Insert url"
-            style={{ width: 450 }}
-          />
-        </Modal>
-      </div>  
+          url={url}
+          onUrlChange={this.handleUrlChange}
+          onClose={this.handleCloseModal}
+          onRemoveLink={this.handleRemoveLink}
+          onInsertLink={this.handleInsertLink}
+        />
+      </div>
     );
   }
 
@@ -86,10 +67,6 @@ class RichTextEditor extends React.PureComponent<Props, State> {
     this.Editor = element;
   }
 
-  private handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({url: event.currentTarget.value});
-  }
-
   private handleLinkClick = () => {
     this.setState({modalVisible: true});
   }
@@ -98,7 +75,7 @@ class RichTextEditor extends React.PureComponent<Props, State> {
     this.setState({modalVisible: false});
   }
 
-  private handleInsert = () => {
+  private handleInsertLink = () => {
     const {anchorNode, focusNode, anchorOffset, focusOffset} = this.state;
     
     this.Editor!.focus();
@@ -121,7 +98,11 @@ class RichTextEditor extends React.PureComponent<Props, State> {
     this.setState({modalVisible: false, url: ''});
   }
 
-  private handleRemove = () => {
+  private handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({url: event.currentTarget.value});
+  }
+
+  private handleRemoveLink = () => {
     document.execCommand('unlink');
     this.handleCloseModal();
   }
