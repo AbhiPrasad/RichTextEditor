@@ -79,13 +79,6 @@ class RichTextEditor extends React.PureComponent<Props, State> {
   private handleInsert = () => {
     const {anchorNode, focusNode, anchorOffset, focusOffset} = this.state;
 
-    // tslint:disable-next-line
-    console.log(this.Editor!.childElementCount);
-    // tslint:disable-next-line
-    console.log('anchor:', anchorOffset);
-    // tslint:disable-next-line
-    console.log('focus:', focusOffset);
-
     // Anchor is where user begins selection and focus is where user ends selection
 
     this.Editor!.focus();
