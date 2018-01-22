@@ -1,16 +1,33 @@
 import * as React from 'react';
 import './Toolbar.css';
 
-class Toolbar extends React.PureComponent {
-  render() {
-    return (
-      <div className="Toolbar">
-        <button> B </button>
-        <button> I </button>
-        <button> Link </button>
-      </div>
-    );
-  }
+export interface Props {
+  onBoldClick(): void;
+  onItalicClick(): void;
+  onLinkClick?(): void;
 }
 
-export default Toolbar;
+export default function Toolbar({onBoldClick, onItalicClick, onLinkClick}: Props) {
+  return (
+    <div className="Toolbar">
+      <button 
+        type="button"
+        onClick={onBoldClick}
+      > 
+        B
+      </button>
+      <button 
+        type="button"
+        onClick={onItalicClick}
+      > 
+        I
+      </button>
+      <button 
+        type="button"
+        onClick={onLinkClick}
+      > 
+        Link
+      </button>
+    </div>
+  );
+}

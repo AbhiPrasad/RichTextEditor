@@ -1,33 +1,23 @@
 import * as React from 'react';
 import './Editor.css';
 
-export interface State {
-  html: string | null;
-}
-
 export interface Props {
+  isBold: boolean;
   onChange(event: React.FormEvent<HTMLElement>): void;
+  onKeyDown?(event: React.FormEvent<HTMLElement>): void;
+  onKeyUp?(event: React.FormEvent<HTMLElement>): void;
+  setEditor?(element: HTMLDivElement): void;
 }
 
-class Editor extends React.PureComponent<Props, State> {
-  state: State = {
-    html: null,
-  };
-  
-  render() {
-    const {onChange} = this.props;
-    const {html} = this.state;
-    const innerHtml = {__html: html ? html : ''};
-
-    return (
-      <div 
-        className="Editor" 
-        contentEditable={true} 
-        onInput={onChange}
-        dangerouslySetInnerHTML={innerHtml}
-      />
-    );
-  }
+export default function Editor({onChange, onKeyDown, onKeyUp, setEditor}: Props) {
+  return (
+    <div 
+      className="Editor" 
+      contentEditable={true} 
+      onInput={onChange}
+      onKeyDown={onKeyDown}
+      onKeyUp={onKeyUp}
+      ref={setEditor}
+    />
+  );
 }
-
-export default Editor;
